@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>kni</title>
+<style>
+:root{
+  --bg:#07060a; --panel:#0f1724; --muted:#94a3b8; --glass: rgba(255,255,255,0.04);
+  --accent1:#06b6d4; --accent2:#7c3aed; --accent3:#06d6a0;
+  --card:#0b1220; --card-2:#0e1724; --success:#16a34a; --danger:#dc2626;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,0.07), transparent 6%),
+              radial-gradient(900px 500px at 90% 90%, rgba(6,182,212,0.05), transparent 6%),
+              linear-gradient(180deg,#030313 0%, #071124 100%);
+  color:#e6eef8;padding:28px;display:flex;justify-content:center;
+}
+.container{
+  width:100%;max-width:1200px; display:grid; grid-template-columns: 1fr 380px; gap:24px;
+}
+.header{
+  grid-column:1/-1; display:flex; align-items:center; gap:16px; padding:14px 16px; border-radius:12px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03);
+  box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+}
+.logo{width:68px;height:68px;border-radius:12px;overflow:hidden;flex:0 0 68px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent1),var(--accent2))}
+.logo img{width:60px;height:60px;object-fit:contain}
+.title{display:flex;flex-direction:column}
+.title h1{margin:0;font-size:20px;letter-spacing:0.3px}
+.title p{margin:0;color:var(--muted);font-size:13px}
+.searchbar{margin-left:auto;display:flex;gap:10px;align-items:center}
+.searchbox{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
+.searchbox input{background:transparent;border:0;outline:0;color:inherit;width:260px;font-size:14px}
+.btn{background:linear-gradient(180deg,var(--accent1),var(--accent2));border:0;color:#021; padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700}
+.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px 12px;border-radius:8px;color:var(--muted);cursor:pointer}
+.main{
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:12px; padding:18px; min-height:720px;
+  border:1px solid rgba(255,255,255,0.03); box-shadow:0 8px 24px rgba(3,7,18,0.6); overflow:auto;
+}
+.side{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00)); border-radius:12px;padding:16px; border:1px solid rgba(255,255,255,0.03); min-height:720px}
+.section{display:flex;justify-content:space-between;align-items:end}
+.h1{margin:0;font-size:18px;font-weight:700}
+.sub{color:var(--muted);font-size:13px}
+.controls{margin-top:12px;display:flex;gap:8px;align-items:center}
+.controls input, .controls select{padding:10px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.03);color:inherit}
+.file-list{margin-top:18px;display:grid;gap:10px}
+.file{
+  display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:linear-gradient(180deg,#081021,#071224);
+  border:1px solid rgba(255,255,255,0.02);
+}
+.left{display:flex;align-items:center;gap:12px}
+.icon{width:48px;height:48px;border-radius:8px;background:linear-gradient(180deg,#071a1b,#042f2e);display:flex;align-items:center;justify-content:center;color:var(--accent3);font-family:var(--mono);font-weight:700}
+.meta strong{display:block}
+.meta span{color:var(--muted);font-size:13px}
+.actions{display:flex;gap:8px;align-items:center}
+.small{font-size:13px;color:var(--muted)}
+.card{background:linear-gradient(180deg,#071022,#06101a);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+.input-file{display:flex;gap:8px}
+.token{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit}
+.os-list{display:flex;gap:8px;margin-top:10px}
+.os{padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;cursor:pointer;color:var(--muted)}
+.os.active{background:linear-gradient(90deg, rgba(6,182,212,0.08), rgba(124,58,237,0.06));border-color:rgba(6,182,212,0.18);color:#dff}
+.cmd{background:#031018;padding:12px;border-radius:8px;font-family:var(--mono);font-size:13px;color:#bfe;white-space:pre-line}
+.notice{padding:10px;border-radius:10px;margin-bottom:10px}
+.notice.ok{background:linear-gradient(90deg,#052e22,#073f2e);color:#bfe}
+.notice.err{background:linear-gradient(90deg,#3b0a12,#2b0710);color:#ffc7c7}
+.progress{height:8px;background:rgba(255,255,255,0.02);border-radius:10px;overflow:hidden}
+.progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent1),var(--accent2));width:0%;transition:width 220ms linear}
+.footer{color:var(--muted);font-size:12px;text-align:center;margin-top:14px}
+.copy-btn{background:linear-gradient(90deg,var(--accent2),var(--accent1));border:0;color:#021;padding:8px 10px;border-radius:8px;cursor:pointer}
+.badge{background:linear-gradient(90deg,#0f1724,#001219);padding:6px 10px;border-radius:999px;color:var(--accent1);font-weight:700}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+@media (max-width:1000px){
+  .container{grid-template-columns:1fr; padding:20px}
+  .side{min-height:auto}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header class="header">
+    <div class="logo"><img src="https://hacker1514.github.io/python/kni.png" alt="kni logo"></div>
+    <div class="title">
+      <h1>kni - organisation</h1>
+      <p class="sub">We can build our own header files and makes them global</p>
+    </div>
+    <div class="searchbar">
+      <div class="searchbox">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35" stroke="#a5b4c7" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <input id="topSearch" placeholder="header file..." />
+      </div>
+      <button class="btn" id="refreshBtn">Search</button>
+    </div>
+  </header>
+  <main class="main" id="main">
+    <div class="section">
+      <div>
+        <h2 class="h1">Header Files</h2>
+        <div class="sub">organiser: <span id="repoId" class="small">Niranjan Kumar K</span></div>
+      </div>
+      <div class="small">Total: <span id="total" class="badge">0</span></div>
+    </div>
+    <div class="controls">
+      <input id="filter" placeholder="Filter by name or extension (eg. .h)" />
+      <select id="branch" style="min-width:120px">
+        <option>main</option><option>master</option>
+      </select>
+      <div style="margin-left:auto" class="small">Email : <span class="small">kni.org.com@gmail.com</span></div>
+    </div>
+    <div id="files" class="file-list" aria-live="polite">
+      <div class="empty">Loading files…</div>
+    </div>
+    <div style="margin-top:18px; display:flex; gap:12px;">
+      <div style="flex:1" class="card">
+        <div style="font-weight:700">Main Purpose : </div>
+        <div class="small" style="margin-top:8px">- Enhancing c programming .<br>- Making global connective .<br>- Working Together for better Future .</div>
+      </div>
+      <div style="width:220px" class="card">
+        <div style="font-weight:700">Last action</div>
+        <div id="lastAction" class="small" style="margin-top:8px;color:var(--muted)">—</div>
+      </div>
+    </div>
+  </main>
+  <aside class="side">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-weight:700">Download & Install</div>
+        <div class="small">Select file then Download</div>
+      </div>
+      <div style="margin-top:12px">
+        <div class="small">Selected file</div>
+        <div style="font-weight:700; margin-top:6px" id="selName">—</div>
+        <div class="small" id="selPath" style="color:var(--muted)">Path: —</div>
+      </div>
+      <div style="margin-top:12px;">
+        <div style="display:flex;gap:8px">
+          <button id="dlBtn" class="btn" style="flex:1" disabled>⬇ Download</button>
+          <button id="rawBtn" class="btn-ghost" style="flex:0 0 86px" disabled>Raw</button>
+        </div>
+        <div style="margin-top:10px; display:none" id="progressWrap">
+          <div class="progress"><i style="width:0%"></i></div>
+        </div>
+      </div>
+      <div style="margin-top:14px">
+        <div class="small">Choose OS</div>
+        <div class="os-list" id="osList">
+          <div class="os active" data-os="linux">Linux</div>
+          <div class="os" data-os="mac">macOS</div>
+          <div class="os" data-os="windows">Windows</div>
+        </div>
+      </div>
+      <div style="margin-top:12px">
+        <div class="small">Install / Move command</div>
+        <div id="cmd" class="cmd">No file selected</div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button id="copyBtn" class="copy-btn" disabled>Copy command</button>
+          <button id="openBtn" class="btn-ghost" disabled>Open Downloads</button>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-weight:700">Upload Your Header File</div>
+        <div class="small">World !</div>
+      </div>
+      <div style="margin-top:10px">
+        <input id="fileInput" type="file" accept=".h" />
+      </div>
+      <div style="margin-top:10px">
+        <div class="small" style="margin-top:6px;color:var(--muted)">Your Header File become Global.</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button id="uploadBtn" class="btn" style="flex:1">Upload</button>
+        <button id="prBtn" class="btn-ghost" style="flex:1;"></button>
+      </div>
+    </div>
+    <div class="footer">©kni.org.com [Niranjan Kumar K]</div>
+  </aside>
+</div>
+<script>
+const OWNER = "kni-org";
+const REPO = "headers";
+const BRANCH_FALLBACK = ["main","master"];
+let state = { files: [], branch: "main", selected: null, lastBlob: null, os: "linux" };
+const $ = id => document.getElementById(id);
+const el = (t, cls) => { const e=document.createElement(t); if(cls) e.className=cls; return e };
+const b64 = s => btoa(unescape(encodeURIComponent(s)));
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+const filesEl = $("files");
+const filterEl = $("filter");
+const topSearch = $("topSearch");
+const branchEl = $("branch");
+const refreshBtn = $("refreshBtn");
+const totalEl = $("total");
+const selName = $("selName");
+const selPath = $("selPath");
+const dlBtn = $("dlBtn");
+const rawBtn = $("rawBtn");
+const progressWrap = $("progressWrap");
+const progressBar = progressWrap.querySelector("i");
+const cmdBox = $("cmd");
+const copyBtn = $("copyBtn");
+const openBtn = $("openBtn");
+const fileInput = $("fileInput");
+const uploadBtn = $("uploadBtn");
+const prBtn = $("prBtn");
+const lastAction = $("lastAction");
+async function fetchTree(branch){
+  const url = `https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${branch}?recursive=1`;
+  const r = await fetch(url);
+  if(!r.ok) throw new Error("branch not found");
+  return r.json();
+}
+async function loadFiles(){
+  filesEl.innerHTML = `<div class="empty">Loading files…</div>`;
+  state.branch = branchEl.value || "main";
+  let data = null;
+  for(const b of [state.branch, ...BRANCH_FALLBACK.filter(x=>x!==state.branch)]){
+    try{ data = await fetchTree(b); state.branch = b; break }catch(e){ }
+  }
+  if(!data){ filesEl.innerHTML = `<div class="empty">Repo or branch not found</div>`; return; }
+  const tree = (data.tree||[]).filter(n=>n.type==="blob");
+  state.files = tree.map(t=>({ path: t.path, size: t.size, sha: t.sha }));
+  renderList();
+}
+function renderList(){
+  const q = (filterEl.value + " " + topSearch.value).trim().toLowerCase();
+  const list = state.files.filter(f => f.path.toLowerCase().includes(q));
+  totalEl.textContent = list.length;
+  if(!list.length){ filesEl.innerHTML = `<div class="empty">No files found</div>`; return; }
+  filesEl.innerHTML = "";
+  list.sort((a,b)=>a.path.localeCompare(b.path)).forEach(f=>{
+    const item = el("div","file");
+    const left = el("div","left");
+    const icon = el("div","icon"); icon.textContent = (f.path.split("/").slice(-1)[0].slice(0,2)).toUpperCase();
+    const meta = el("div","meta"); meta.innerHTML = `<strong>${f.path.split("/").slice(-1)[0]}</strong><span>${f.path} • ${f.size ?? '-'} bytes</span>`;
+    left.appendChild(icon); left.appendChild(meta);
+    const actions = el("div","actions");
+    const raw = el("button","btn-ghost"); raw.textContent = "Raw";
+    raw.onclick = ()=> window.open(rawUrl(f.path), "_blank");
+    const down = el("button","btn"); down.textContent = "Download";
+    down.onclick = ()=> downloadAndSelect(f);
+    actions.appendChild(raw); actions.appendChild(down);
+    item.appendChild(left); item.appendChild(actions);
+    filesEl.appendChild(item);
+  });
+}
+function rawUrl(path){ return `https://raw.githubusercontent.com/${OWNER}/${REPO}/${state.branch}/${path}`; }
+async function downloadAndSelect(file){
+  progressWrap.style.display = "block";
+  progressBar.style.width = "6%";
+  dlBtn.disabled = true;
+  try{
+    const resp = await fetch(rawUrl(file.path));
+    if(!resp.ok) throw new Error("download failed");
+    const blob = await resp.blob();
+    progressBar.style.width = "100%";
+    await sleep(150);
+    state.lastBlob = blob;
+    selectFile(file);
+    forceDownload(blob, file.path.split("/").slice(-1)[0]);
+    lastAction.textContent = `Downloaded ${file.path.split("/").slice(-1)[0]}`;
+  }catch(e){
+    showNotice(e.message || "Download failed", true);
+  }finally{
+    dlBtn.disabled = false;
+    progressWrap.style.display = "none";
+    progressBar.style.width = "0%";
+  }
+}
+function forceDownload(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename; a.style.display = "none";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  openBtn.disabled = false;
+}
+function selectFile(f){
+  state.selected = f;
+  selName.textContent = f ? f.path.split("/").slice(-1)[0] : "—";
+  selPath.textContent = f ? f.path : "—";
+  dlBtn.disabled = !f;
+  rawBtn.disabled = !f;
+  updateCommand();
+}
+document.querySelectorAll(".os").forEach(elm=>{
+  elm.addEventListener("click", ()=>{
+    document.querySelectorAll(".os").forEach(x=>x.classList.remove("active"));
+    elm.classList.add("active");
+    state.os = elm.dataset.os;
+    updateCommand();
+  });
+});
+function updateCommand(){
+  if(!state.selected){ cmdBox.textContent = "No file selected"; copyBtn.disabled = true; return; }
+  const name = state.selected.path.split("/").slice(-1)[0];
+  let txt="";
+  if(state.os === "linux") txt = `# Move ${name} to system include (requires sudo)
+sudo mv ~/Downloads/${name} /usr/local/include/
+# or:
+sudo mv ~/Downloads/${name} /usr/include/`;
+  else if(state.os === "mac") txt = `# macOS - move to /usr/local/include
+sudo mv ~/Downloads/${name} /usr/local/include/
+# or install via brew include paths if needed`;
+  else txt = `# Windows PowerShell (run as Administrator)
+Move-Item "$env:USERPROFILE\\Downloads\\${name}" "C:\\\\MinGW\\\\include\\\\${name}"
+# Adjust path for Visual Studio include`;
+  cmdBox.textContent = txt;
+  copyBtn.disabled = false;
+}
+copyBtn.addEventListener("click", async ()=>{
+  try{
+    await navigator.clipboard.writeText(cmdBox.textContent);
+    copyBtn.textContent = "Copied!";
+    setTimeout(()=>copyBtn.textContent = "Copy command", 1400);
+  }catch(e){
+    copyBtn.textContent = "Copy failed";
+    setTimeout(()=>copyBtn.textContent = "Copy command", 1400);
+  }
+});
+openBtn.addEventListener("click", ()=>{
+  showNotice("Downloaded file is in your browser's Downloads folder. Use the command to move it to include path.", false);
+});
+function showNotice(msg, isError=false){
+  const n = el("div","notice " + (isError ? "err" : "ok"));
+  n.textContent = msg;
+  document.querySelector(".side").insertBefore(n, document.querySelector(".side").firstChild);
+  setTimeout(()=>n.remove(), 4200);
+}
+async function uploadFile(asPR=false){
+  const f = fileInput.files[0];
+  if(!f){ showNotice("Choose a .h file first", true); return; }
+  // You can replace this token setup with a secure prompt for deploy.
+  const token = "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";
+  if(!token){ showNotice("Provide a GitHub token in the token field", true); return; }
+  const branch = branchEl.value || state.branch || "main";
+  const path = `headers/${f.name}`;
+  const content = await f.text();
+  const encoded = b64(content);
+  let sha = null;
+  try{
+    const checkRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(path)}?ref=${branch}`, { headers: { Authorization: `token ${token}` }});
+    if(checkRes.ok){
+      const jd = await checkRes.json(); sha = jd.sha;
+    }
+  }catch(e){}
+  if(asPR){
+    // create PR branch and push file (feature left as exercise, core works)
+  } else {
+    try{
+      const body = { message: `Add/update ${f.name}`, content: encoded, branch };
+      if(sha) body.sha = sha;
+      const putRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(path)}`, {
+        method: "PUT",
+        headers: { Authorization: `token ${token}`, "Content-Type":"application/json" },
+        body: JSON.stringify(body)
+      });
+      const j = await putRes.json();
+      if(putRes.ok){ showNotice("Uploaded successfully", false); lastAction.textContent = `Uploaded ${f.name}`; fileInput.value = ""; loadFiles(); }
+      else throw new Error(j.message || JSON.stringify(j));
+    }catch(e){ showNotice(e.message || "Upload failed", true); }
+  }
+}
+refreshBtn.addEventListener("click", ()=>loadFiles());
+filterEl.addEventListener("input", ()=>renderList());
+topSearch.addEventListener("input", ()=>renderList());
+branchEl.addEventListener("change", ()=>loadFiles());
+dlBtn.addEventListener("click", ()=>{ if(state.selected) downloadAndSelect(state.selected); });
+rawBtn.addEventListener("click", ()=>{ if(state.selected) window.open(rawUrl(state.selected.path), "_blank"); });
+uploadBtn.addEventListener("click", ()=>uploadFile(false));
+prBtn.addEventListener("click", ()=>uploadFile(true));
+(async ()=>{ branchEl.value = "main"; await loadFiles(); })();
+</script>
+</body>
+</html>
