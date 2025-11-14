@@ -421,7 +421,7 @@ async function uploadFile(asPR=false){
   const f = fileInput.files[0];
   if(!f){ showNotice("Choose a .h file first", true); return; }
   // You can replace this token setup with a secure prompt for deploy.
-  const token = "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";
+  const token = "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";
   if(!token){ showNotice("Provide a GitHub token in the token field", true); return; }
   const branch = branchEl.value || state.branch || "main";
   const path = `headers/${f.name}`;
