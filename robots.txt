@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://kni-org.github.io/kni/sitemap.xml
