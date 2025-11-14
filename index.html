@@ -5,8 +5,7 @@
 <meta name="robots" content="index, follow">                                                       <meta name="description" content="kni-org for enhancing c programming !">
 <meta name="keywords" content="kni, c header file, kni library, kni org,niranjan website">
 <meta name="author" content="Niranjan Kumar K">
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="utf-8"/>                                                                            <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>kni</title>                                                                                 <style>
 :root{
   --bg:#090918; --panel:#101827; --muted:#94a3b8; --glass: rgba(255,255,255,0.06);
@@ -264,6 +263,7 @@ body{
 
 </div>
 
+
 <script>
 const OWNER = "kni-org";
 const REPO = "headers";
@@ -292,6 +292,7 @@ const fileInput = $("fileInput");
 const uploadBtn = $("uploadBtn");
 const prBtn = $("prBtn");
 const lastAction = $("lastAction");
+
 async function fetchTree(branch){
   const url = `https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${branch}?recursive=1`;
   const r = await fetch(url);
@@ -417,49 +418,49 @@ function showNotice(msg, isError=false){
   document.querySelector(".side").insertBefore(n, document.querySelector(".side").firstChild);
   setTimeout(()=>n.remove(), 4200);
 }
-async function uploadFile(asPR=false){
+
+// Modified upload logic to open WhatsApp link with message including filename
+async function uploadFile(){
   const f = fileInput.files[0];
-  if(!f){ showNotice("Choose a .h file first", true); return; }
-  // You can replace this token setup with a secure prompt for deploy.
-  const token = "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";
-  if(!token){ showNotice("Provide a GitHub token in the token field", true); return; }
-  const branch = branchEl.value || state.branch || "main";
-  const path = `headers/${f.name}`;
-  const content = await f.text();
-  const encoded = b64(content);
-  let sha = null;
-  try{
-    const checkRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(path)}?ref=${branch}`, { headers: { Authorization: `token ${token}` }});
-    if(checkRes.ok){
-      const jd = await checkRes.json(); sha = jd.sha;
-    }
-  }catch(e){}
-  if(asPR){
-    // create PR branch and push file (feature left as exercise, core works)
-  } else {
-    try{
-      const body = { message: `Add/update ${f.name}`, content: encoded, branch };
-      if(sha) body.sha = sha;
-      const putRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(path)}`, {
-        method: "PUT",
-        headers: { Authorization: `token ${token}`, "Content-Type":"application/json" },
-        body: JSON.stringify(body)
-      });
-      const j = await putRes.json();
-      if(putRes.ok){ showNotice("Uploaded successfully", false); lastAction.textContent = `Uploaded ${f.name}`; fileInput.value = ""; loadFiles(); }
-      else throw new Error(j.message || JSON.stringify(j));
-    }catch(e){ showNotice(e.message || "Upload failed", true); }
+  if(!f){
+    showNotice("Choose a .h file first", true);
+    return;
   }
+  // Compose WhatsApp Web URL with prefilled message containing filename
+  const encodedMsg = encodeURIComponent(`Hello ! Developer. Your ${f.name} file is not supporting to load, so please manually upload here !.I make it global.`);
+  const whatsappUrl = `https://wa.me/919515888385?text=${encodedMsg}`;
+  window.open(whatsappUrl, "_blank");
 }
+
+// Attach event listeners
 refreshBtn.addEventListener("click", ()=>loadFiles());
 filterEl.addEventListener("input", ()=>renderList());
 topSearch.addEventListener("input", ()=>renderList());
 branchEl.addEventListener("change", ()=>loadFiles());
 dlBtn.addEventListener("click", ()=>{ if(state.selected) downloadAndSelect(state.selected); });
 rawBtn.addEventListener("click", ()=>{ if(state.selected) window.open(rawUrl(state.selected.path), "_blank"); });
-uploadBtn.addEventListener("click", ()=>uploadFile(false));
-prBtn.addEventListener("click", ()=>uploadFile(true));
-(async ()=>{ branchEl.value = "main"; await loadFiles(); })();
+uploadBtn.addEventListener("click", ()=>uploadFile());
+prBtn.addEventListener("click", ()=>uploadFile());
+
+// Add glowing background to Upload button
+uploadBtn.style.background = "linear-gradient(270deg, #06b6d4, #7c3aed, #06d6a0)";
+uploadBtn.style.backgroundSize = "600% 600%";
+uploadBtn.style.animation = "glow 8s ease infinite";
+uploadBtn.style.color = "#021";
+
+// Define glow keyframes
+const style = document.createElement('style');
+style.textContent = `
+@keyframes glow {
+  0%, 100% {background-position: 0% 50%;}
+  50% {background-position: 100% 50%;}
+}`;
+document.head.appendChild(style);
+
+(async ()=>{
+  branchEl.value = "main";
+  await loadFiles();
+})();
 </script>
 </body>
 </html>
